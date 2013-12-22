@@ -38,14 +38,14 @@ Note that specifying an encoding is optional. If an encoding is not specified, U
 
     // An object containing some properties
     var data = {
-        "key1": "value1",
-        "key2": "value2"
+        'key1': 'value1',
+        'key2': 'value2'
     };
     
     // Write an object containing key/value pairs to file 'Localizable.strings', execute callback when done
     i18nStringsFiles.writeFile('Localizable.strings', data, 'UTF-16', function(err){
         if(err) return console.log(err);
-        console.log("File written");
+        console.log('File written');
     });
 
 ### writeFileSync(filename, data, [encoding])
@@ -54,14 +54,14 @@ Note that specifying an encoding is optional. If an encoding is not specified, U
 
     // Write an object containing key/value pairs to file 'Localizable.strings'
     i18nStringsFiles.writeFileSync('Localizable.strings', data, 'UTF-16');
-    console.log("File written");
+    console.log('File written');
 
 ### parse(input)
     // Include i18n-strings-files
     var i18nStringsFiles = require('i18n-strings-files');
 
     // A string in the .strings file format
-    var input = "\"key1\" = \"value1\";\n\"key2\" = \"value2\";"
+    var input = '"key1" = "value1";'
     
     // Parse .strings format string into object containing the key/value pairs
     var data = i18nStringsFiles.parse(input);
@@ -72,8 +72,8 @@ Note that specifying an encoding is optional. If an encoding is not specified, U
 
     // An object containing some properties
     var data = {
-        "key1": "value1",
-        "key2": "value2"
+        'key1': 'value1',
+        'key2': 'value2'
     };
     
     // Compile an object containing key/value pairs into a string in .strings file format
