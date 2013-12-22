@@ -6,26 +6,6 @@
 
   Iconv = require('iconv').Iconv;
 
-  /*
-  https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpinternational/Articles/StringsFiles.html
-  
-  # load module
-  i18nStringsFiles = require('./lib/i18n-strings-files')
-  
-  # read a .strings file into an object
-  data = i18nStringsFiles.readFileSync('Localizable.strings')
-  
-  # write an object into a .strings file
-  i18nStringsFiles.writeFileSync('Localizable.strings', data)
-  
-  # compile an object into a string (in .strings format)
-  str = i18nStringsFiles.compile(data)
-  
-  # parse a string (in .strings format) into an object
-  data = i18nStringsFiles.parse(str)
-  */
-
-
   i18nStringsFiles = function() {};
 
   i18nStringsFiles.prototype.readFile = function(file, encoding, callback) {
