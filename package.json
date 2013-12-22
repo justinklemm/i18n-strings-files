@@ -1,0 +1,30 @@
+{
+  "name": "i18n-strings-files",
+  "version": "0.0.1",
+  "main": "index.js",
+  "description": "Process .strings files used for localization in iOS/OSX development",
+  "homepage": "https://github.com/justinklemm/i18n-strings-files",
+  "author": {
+    "name": "Justin Klemm",
+    "url": "http://justinklemm.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/justinklemm/i18n-strings-files.git"
+  },
+  "dependencies": {
+    "iconv": "~2.0.7"
+  },
+  "keywords": [
+    "i18n",
+    "localization",
+    "internationalization",
+    "strings",
+    "apple",
+    "ios",
+    "osx"
+  ],
+  "license": "MIT",
+  "readme": "# i18n Strings Files\nProcess .strings files used for localization in iOS/OSX development",
+  "readmeFilename": "README.md"
+}
