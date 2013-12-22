@@ -29,13 +29,14 @@
   i18nStringsFiles = function() {};
 
   i18nStringsFiles.prototype.readFile = function(file, encoding, callback) {
+    var _this = this;
     return fs.readFile(file, function(err, buffer) {
       var data, str;
       if (err) {
         return typeof callback === "function" ? callback(err, null) : void 0;
       }
-      str = this.convertBufferToString(buffer, encoding);
-      data = this.parse(str);
+      str = _this.convertBufferToString(buffer, encoding);
+      data = _this.parse(str);
       return typeof callback === "function" ? callback(null, data) : void 0;
     });
   };
@@ -48,7 +49,8 @@
   };
 
   i18nStringsFiles.prototype.writeFile = function(file, data, encoding, callback) {
-    var buffer, str;
+    var buffer, str,
+      _this = this;
     str = this.compile(data);
     buffer = this.convertStringToBuffer(str, encoding);
     return fs.writeFile(file, buffer, function(err) {

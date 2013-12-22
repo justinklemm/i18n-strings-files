@@ -27,12 +27,12 @@ i18nStringsFiles = ->
 
 i18nStringsFiles.prototype.readFile = (file, encoding, callback) ->
   # read passed in file
-  fs.readFile file, (err, buffer) ->
+  fs.readFile file, (err, buffer) =>
     # if there's an error, callback with it and return
     if err then return callback?(err, null)
     # convert buffer from file into utf-8 string, then parse
-    str = this.convertBufferToString(buffer, encoding)
-    data = this.parse(str)
+    str = @convertBufferToString(buffer, encoding)
+    data = @parse(str)
     # callback with parsed object
     callback?(null, data)
 
@@ -40,25 +40,25 @@ i18nStringsFiles.prototype.readFile = (file, encoding, callback) ->
 i18nStringsFiles.prototype.readFileSync = (file, encoding) ->
   # read the passed in file and convert to utf-8 string
   buffer = fs.readFileSync(file)
-  str = this.convertBufferToString(buffer, encoding)
+  str = @convertBufferToString(buffer, encoding)
   # pass file contents string to parse() and return
-  return this.parse(str)
+  return @parse(str)
 
 
 i18nStringsFiles.prototype.writeFile = (file, data, encoding, callback) ->
   # build string and convert from utf-8 to output buffer
-  str = this.compile(data)
-  buffer = this.convertStringToBuffer(str, encoding)
+  str = @compile(data)
+  buffer = @convertStringToBuffer(str, encoding)
   # write buffer to file
-  fs.writeFile file, buffer, (err) ->
+  fs.writeFile file, buffer, (err) =>
     # callback with any errors
     callback?(err)
 
 
 i18nStringsFiles.prototype.writeFileSync = (file, data, encoding) ->
   # build string and convert from utf-8 to output buffer
-  str = this.compile(data)
-  buffer = this.convertStringToBuffer(str, encoding)
+  str = @compile(data)
+  buffer = @convertStringToBuffer(str, encoding)
   # write buffer to file
   return fs.writeFileSync(file, buffer)
 
