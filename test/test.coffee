@@ -18,13 +18,13 @@ fieldValue = 'Log In'
 #fieldValue = 'Reservar mi sesión'
 
 
-describe 'Reading file into object', ->
+describe 'Sync: Reading file into object', ->
   it 'should populate object properties with values', ->
     data = i18nStringsFiles.readFileSync(fileTest, fileEncoding)
     data[fieldName].should.equal(fieldValue)
 
 
-describe 'Read, compile, parse', ->
+describe 'Sync: Read, compile, parse', ->
   it 'should populate object properties with values before and after', ->
     data = i18nStringsFiles.readFileSync(fileTest, fileEncoding)
     data[fieldName].should.equal(fieldValue)
@@ -33,11 +33,30 @@ describe 'Read, compile, parse', ->
     data[fieldName].should.equal(fieldValue)
 
 
-describe 'Read, write, read', ->
+describe 'Sync: Read, write, read', ->
   it 'should populate object properties with values before and after', ->
     data = i18nStringsFiles.readFileSync(fileTest, fileEncoding)
     data[fieldName].should.equal(fieldValue)
     i18nStringsFiles.writeFileSync(fileTemp, data, fileEncoding)
     data = i18nStringsFiles.readFileSync(fileTemp, fileEncoding)
-    fs.unlinkSync(fileTemp)
     data[fieldName].should.equal(fieldValue)
+    fs.unlinkSync(fileTemp)
+
+
+describe 'Async: Reading file into object', ->
+  it 'should populate object properties with values', (done) ->
+    i18nStringsFiles.readFile fileTest, fileEncoding, (err, data) ->
+      data[fieldName].should.equal(fieldValue)
+      done()
+
+
+describe 'Async: Read, write, read', ->
+  it 'should populate object properties with values before and after', (done) ->
+    i18nStringsFiles.readFile fileTest, fileEncoding, (err, data) ->
+      data[fieldName].should.equal(fieldValue)
+      i18nStringsFiles.writeFile fileTemp, data, fileEncoding, (err) ->
+        i18nStringsFiles.readFile fileTemp, fileEncoding, (err, data) ->
+          data[fieldName].should.equal(fieldValue)
+          fs.unlinkSync(fileTemp)
+          done()
+    

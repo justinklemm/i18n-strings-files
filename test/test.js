@@ -18,7 +18,7 @@
 
   fieldValue = 'Log In';
 
-  describe('Reading file into object', function() {
+  describe('Sync: Reading file into object', function() {
     return it('should populate object properties with values', function() {
       var data;
       data = i18nStringsFiles.readFileSync(fileTest, fileEncoding);
@@ -26,7 +26,7 @@
     });
   });
 
-  describe('Read, compile, parse', function() {
+  describe('Sync: Read, compile, parse', function() {
     return it('should populate object properties with values before and after', function() {
       var data, str;
       data = i18nStringsFiles.readFileSync(fileTest, fileEncoding);
@@ -37,15 +37,39 @@
     });
   });
 
-  describe('Read, write, read', function() {
+  describe('Sync: Read, write, read', function() {
     return it('should populate object properties with values before and after', function() {
       var data;
       data = i18nStringsFiles.readFileSync(fileTest, fileEncoding);
       data[fieldName].should.equal(fieldValue);
       i18nStringsFiles.writeFileSync(fileTemp, data, fileEncoding);
       data = i18nStringsFiles.readFileSync(fileTemp, fileEncoding);
-      fs.unlinkSync(fileTemp);
-      return data[fieldName].should.equal(fieldValue);
+      data[fieldName].should.equal(fieldValue);
+      return fs.unlinkSync(fileTemp);
+    });
+  });
+
+  describe('Async: Reading file into object', function() {
+    return it('should populate object properties with values', function(done) {
+      return i18nStringsFiles.readFile(fileTest, fileEncoding, function(err, data) {
+        data[fieldName].should.equal(fieldValue);
+        return done();
+      });
+    });
+  });
+
+  describe('Async: Read, write, read', function() {
+    return it('should populate object properties with values before and after', function(done) {
+      return i18nStringsFiles.readFile(fileTest, fileEncoding, function(err, data) {
+        data[fieldName].should.equal(fieldValue);
+        return i18nStringsFiles.writeFile(fileTemp, data, fileEncoding, function(err) {
+          return i18nStringsFiles.readFile(fileTemp, fileEncoding, function(err, data) {
+            data[fieldName].should.equal(fieldValue);
+            fs.unlinkSync(fileTemp);
+            return done();
+          });
+        });
+      });
     });
   });
 
