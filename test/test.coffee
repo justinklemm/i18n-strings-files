@@ -58,3 +58,14 @@ describe 'Async: Read, write, read', ->
           checkValues(data)
           fs.unlinkSync(fileTemp)
           done()
+
+
+describe 'Async: Read, write, read (no encoding param)', ->
+  it 'should populate object properties with values before and after', (done) ->
+    i18nStringsFiles.readFile fileTest, (err, data) ->
+      checkValues(data)
+      i18nStringsFiles.writeFile fileTemp, data, (err) ->
+        i18nStringsFiles.readFile fileTemp, (err, data) ->
+          checkValues(data)
+          fs.unlinkSync(fileTemp)
+          done()

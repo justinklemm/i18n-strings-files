@@ -12,7 +12,7 @@
 
   fileTest = __dirname + '/test.strings';
 
-  fileEncoding = 'UTF-8';
+  fileEncoding = 'UTF-16';
 
   checkValues = function(data) {
     data['test-normal'].should.equal("Test normal");
@@ -69,6 +69,21 @@
         checkValues(data);
         return i18nStringsFiles.writeFile(fileTemp, data, fileEncoding, function(err) {
           return i18nStringsFiles.readFile(fileTemp, fileEncoding, function(err, data) {
+            checkValues(data);
+            fs.unlinkSync(fileTemp);
+            return done();
+          });
+        });
+      });
+    });
+  });
+
+  describe('Async: Read, write, read (no encoding param)', function() {
+    return it('should populate object properties with values before and after', function(done) {
+      return i18nStringsFiles.readFile(fileTest, function(err, data) {
+        checkValues(data);
+        return i18nStringsFiles.writeFile(fileTemp, data, function(err) {
+          return i18nStringsFiles.readFile(fileTemp, function(err, data) {
             checkValues(data);
             fs.unlinkSync(fileTemp);
             return done();
