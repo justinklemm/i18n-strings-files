@@ -10,6 +10,10 @@
 
   i18nStringsFiles.prototype.readFile = function(file, encoding, callback) {
     var _this = this;
+    if (typeof callback === "undefined" && typeof encoding === "function") {
+      callback = encoding;
+      encoding = null;
+    }
     return fs.readFile(file, function(err, buffer) {
       var data, str;
       if (err) {
@@ -31,6 +35,10 @@
   i18nStringsFiles.prototype.writeFile = function(file, data, encoding, callback) {
     var buffer, str,
       _this = this;
+    if (typeof callback === "undefined" && typeof encoding === "function") {
+      callback = encoding;
+      encoding = null;
+    }
     str = this.compile(data);
     buffer = this.convertStringToBuffer(str, encoding);
     return fs.writeFile(file, buffer, function(err) {

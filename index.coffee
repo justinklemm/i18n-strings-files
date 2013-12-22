@@ -6,6 +6,10 @@ i18nStringsFiles = ->
 
 
 i18nStringsFiles.prototype.readFile = (file, encoding, callback) ->
+  # check if encoding was excluded and callback specified as 2nd param
+  if typeof callback == "undefined" and typeof encoding == "function"
+    callback = encoding
+    encoding = null
   # read passed in file
   fs.readFile file, (err, buffer) =>
     # if there's an error, callback with it and return
@@ -26,6 +30,10 @@ i18nStringsFiles.prototype.readFileSync = (file, encoding) ->
 
 
 i18nStringsFiles.prototype.writeFile = (file, data, encoding, callback) ->
+  # check if encoding was excluded and callback specified as 3rd param
+  if typeof callback == "undefined" and typeof encoding == "function"
+    callback = encoding
+    encoding = null
   # build string and convert from utf-8 to output buffer
   str = @compile(data)
   buffer = @convertStringToBuffer(str, encoding)
