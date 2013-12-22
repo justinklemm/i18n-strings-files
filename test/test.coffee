@@ -5,7 +5,7 @@ i18nStringsFiles = require('../index')
 
 fileTemp = __dirname + '/temp.strings'
 fileTest = __dirname + '/test.strings'
-fileEncoding = 'UTF-8'
+fileEncoding = 'UTF-16'
 
 
 checkValues = (data) ->
