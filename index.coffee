@@ -80,8 +80,9 @@ i18nStringsFiles.prototype.convertStringToBuffer = (str, encoding) ->
 
 
 i18nStringsFiles.prototype.parse = (input) ->
-  # used for temporarily encoding escaped quotes
-  quoteEncoding = "==xXxXxXxXx=="
+  # patterns used for parsing
+  reAssign = /[^\\]" = "/
+  reLineEnd = /";$/
   # holds resulting hash
   result = {}
   # splt into lines
@@ -90,28 +91,23 @@ i18nStringsFiles.prototype.parse = (input) ->
   lines.forEach (line) ->
     # strip extra whitespace
     line = line.trim()
-    # encode escaped quotes
-    line = line.replace(/\\"/g, quoteEncoding)
     # normalize spacing around assignment operator
-    line = line.replace(/"\s*=\s*"/g, '" = "')
-    # remove any space between final quote and semi-colong
+    line = line.replace(/([^\\])("\s*=\s*")/g, "$1\" = \"")
+    # remove any space between final quote and semi-colon
     line = line.replace(/"\s+;/g, '";')
     # check for first quote, assignment operator, and final semi-colon
-    if line.substr(0, 1) != '"' then return
-    if line.indexOf('" = "') == -1 then return
-    if line.indexOf('";') == -1 then return
+    if line.substr(0, 1) != '"' or line.search(reAssign) == -1 or line.search(reLineEnd) == -1 then return
     # get msgid
     msgid = line
     msgid = msgid.substr(1)
-    msgid = msgid.substr(0, msgid.indexOf('" = "'))
+    msgid = msgid.substr(0, msgid.search(reAssign) + 1)
     # get msg str
     msgstr = line
-    msgstr = msgstr.substr(msgstr.indexOf('" = "') + 5)
-    msgstr = msgstr.substr(0, msgstr.indexOf('";'))
-    # re-encode escaped quotes
-    re = RegExp(quoteEncoding, "g")
-    msgid = msgid.replace(re, "\"")
-    msgstr = msgstr.replace(re, "\"")
+    msgstr = msgstr.substr(msgstr.search(reAssign) + 6)
+    msgstr = msgstr.substr(0, msgstr.search(reLineEnd))
+    # convert escaped quotes
+    msgid = msgid.replace(/\\"/g, "\"")
+    msgstr = msgstr.replace(/\\"/g, "\"")
     # convert escaped new lines
     msgid = msgid.replace(/\\n/g, "\n")
     msgstr = msgstr.replace(/\\n/g, "\n")

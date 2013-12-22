@@ -84,34 +84,27 @@
   };
 
   i18nStringsFiles.prototype.parse = function(input) {
-    var lines, quoteEncoding, result;
-    quoteEncoding = "==xXxXxXxXx==";
+    var lines, reAssign, reLineEnd, result;
+    reAssign = /[^\\]" = "/;
+    reLineEnd = /";$/;
     result = {};
     lines = input.split("\n");
     lines.forEach(function(line) {
-      var msgid, msgstr, re;
+      var msgid, msgstr;
       line = line.trim();
-      line = line.replace(/\\"/g, quoteEncoding);
-      line = line.replace(/"\s*=\s*"/g, '" = "');
+      line = line.replace(/([^\\])("\s*=\s*")/g, "$1\" = \"");
       line = line.replace(/"\s+;/g, '";');
-      if (line.substr(0, 1) !== '"') {
-        return;
-      }
-      if (line.indexOf('" = "') === -1) {
-        return;
-      }
-      if (line.indexOf('";') === -1) {
+      if (line.substr(0, 1) !== '"' || line.search(reAssign) === -1 || line.search(reLineEnd) === -1) {
         return;
       }
       msgid = line;
       msgid = msgid.substr(1);
-      msgid = msgid.substr(0, msgid.indexOf('" = "'));
+      msgid = msgid.substr(0, msgid.search(reAssign) + 1);
       msgstr = line;
-      msgstr = msgstr.substr(msgstr.indexOf('" = "') + 5);
-      msgstr = msgstr.substr(0, msgstr.indexOf('";'));
-      re = RegExp(quoteEncoding, "g");
-      msgid = msgid.replace(re, "\"");
-      msgstr = msgstr.replace(re, "\"");
+      msgstr = msgstr.substr(msgstr.search(reAssign) + 6);
+      msgstr = msgstr.substr(0, msgstr.search(reLineEnd));
+      msgid = msgid.replace(/\\"/g, "\"");
+      msgstr = msgstr.replace(/\\"/g, "\"");
       msgid = msgid.replace(/\\n/g, "\n");
       msgstr = msgstr.replace(/\\n/g, "\n");
       return result[msgid] = msgstr;
