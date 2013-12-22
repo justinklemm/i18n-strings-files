@@ -14,6 +14,7 @@ checkValues = (data) ->
   data['test-new-lines'].should.equal("Test\nNew\nLines")
   data['test-quotes'].should.equal("\"Test quote\"")
   data['test-spacing'].should.equal("Test spacing")
+  data['test \n edge" = '].should.equal("Test edge")
 
 
 describe 'Sync: Reading file into object', ->
@@ -57,4 +58,3 @@ describe 'Async: Read, write, read', ->
           checkValues(data)
           fs.unlinkSync(fileTemp)
           done()
-    

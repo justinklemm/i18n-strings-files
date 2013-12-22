@@ -19,7 +19,8 @@
     data['test-chars'].should.equal("Olvidé mi contraseña");
     data['test-new-lines'].should.equal("Test\nNew\nLines");
     data['test-quotes'].should.equal("\"Test quote\"");
-    return data['test-spacing'].should.equal("Test spacing");
+    data['test-spacing'].should.equal("Test spacing");
+    return data['test \n edge" = '].should.equal("Test edge");
   };
 
   describe('Sync: Reading file into object', function() {

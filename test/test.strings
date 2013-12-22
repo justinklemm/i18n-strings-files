@@ -12,3 +12,6 @@
 
 /* Messed up spacing */
   "test-spacing"   =   "Test spacing"  ;
+
+/* Edge case */
+  "test \n edge\" = " = "Test edge"  ;
