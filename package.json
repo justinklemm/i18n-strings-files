@@ -1,7 +1,7 @@
 {
   "name": "i18n-strings-files",
   "version": "0.0.1",
-  "main": "index.js",
+  "main": "./i18n-strings-files.js",
   "description": "Process .strings files used for localization in iOS/OSX development",
   "homepage": "https://github.com/justinklemm/i18n-strings-files",
   "author": {
