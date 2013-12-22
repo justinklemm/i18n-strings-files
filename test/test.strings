@@ -1,18 +1,14 @@
-/* Buttons */
-"cancel_button" = "Cancel";
-"ok_button" = "OK";
-"share_button" = "Share";
-"login_button" = "Log In";
+/* Normal */
+"test-normal" = "Test normal";
 
-/* Sharing */
-"share_on" = "Share on %@";
+/* Special characters */
+"test-chars" = "Olvidé mi contraseña";
 
-/* Friends */
-"login_alert" = "Log in to %@ to follow @%@";
+/* Escaped new lines */
+"test-new-lines" = "Test\nNew\nLines";
 
-/* Content */
-"pages" = "Page %1$d of %2$d";
+/* Escaped quotes */
+"test-quotes" = "\"Test quote\"";
 
-/* Copyright */
-"Copyright" = "© 2012 All Rights Reserved";
-
+/* Messed up spacing */
+  "test-spacing"   =   "Test spacing"  ;
