@@ -1,7 +1,7 @@
 {
   "name": "i18n-strings-files",
   "version": "0.0.1",
-  "main": "./i18n-strings-files.js",
+  "main": "./index.js",
   "description": "Process .strings files used for localization in iOS/OSX development",
   "homepage": "https://github.com/justinklemm/i18n-strings-files",
   "author": {
@@ -14,6 +14,13 @@
   },
   "dependencies": {
     "iconv": "~2.0.7"
+  },
+  "devDependencies": {
+    "mocha": "~1.16.1",
+    "should": "~2.1.1"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha"
   },
   "keywords": [
     "i18n",

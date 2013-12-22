@@ -1,0 +1,18 @@
+/* Buttons */
+"cancel_button" = "Cancel";
+"ok_button" = "OK";
+"share_button" = "Share";
+"login_button" = "Log In";
+
+/* Sharing */
+"share_on" = "Share on %@";
+
+/* Friends */
+"login_alert" = "Log in to %@ to follow @%@";
+
+/* Content */
+"pages" = "Page %1$d of %2$d";
+
+/* Copyright */
+"Copyright" = "© 2012 All Rights Reserved";
+
