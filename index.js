@@ -112,6 +112,8 @@
       re = RegExp(quoteEncoding, "g");
       msgid = msgid.replace(re, "\"");
       msgstr = msgstr.replace(re, "\"");
+      msgid = msgid.replace(/\\n/g, "\n");
+      msgstr = msgstr.replace(/\\n/g, "\n");
       return result[msgid] = msgstr;
     });
     return result;
@@ -127,6 +129,8 @@
       msgstr = data[msgid];
       msgid = msgid.replace(/"/g, "\\\"");
       msgstr = msgstr.replace(/"/g, "\\\"");
+      msgid = msgid.replace(/\n/g, "\\n");
+      msgstr = msgstr.replace(/\n/g, "\\n");
       output = output + "\"" + msgid + "\" = \"" + msgstr + "\";\n";
     }
     return output;

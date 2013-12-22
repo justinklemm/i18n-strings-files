@@ -112,6 +112,9 @@ i18nStringsFiles.prototype.parse = (input) ->
     re = RegExp(quoteEncoding, "g")
     msgid = msgid.replace(re, "\"")
     msgstr = msgstr.replace(re, "\"")
+    # convert escaped new lines
+    msgid = msgid.replace(/\\n/g, "\n")
+    msgstr = msgstr.replace(/\\n/g, "\n")
     # store values in object
     result[msgid] = msgstr
   # return resulting object
@@ -128,6 +131,9 @@ i18nStringsFiles.prototype.compile = (data) ->
     # escape quotes in msgid, msgstr
     msgid = msgid.replace(/"/g, "\\\"")
     msgstr = msgstr.replace(/"/g, "\\\"")
+    # escape new lines in msgid, msgstr
+    msgid = msgid.replace(/\n/g, "\\n")
+    msgstr = msgstr.replace(/\n/g, "\\n")
     # add line to output
     output = output + "\"" + msgid + "\" = \"" + msgstr + "\";\n"
   # return output string
