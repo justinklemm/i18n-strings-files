@@ -74,7 +74,7 @@
   i18nStringsFiles.prototype.parse = function(input) {
     var lines, reAssign, reLineEnd, result;
     reAssign = /[^\\]" = "/;
-    reLineEnd = /";$/;
+    reLineEnd = /";.*$/;
     result = {};
     lines = input.split("\n");
     lines.forEach(function(line) {
