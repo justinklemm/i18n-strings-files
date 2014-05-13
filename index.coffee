@@ -117,7 +117,7 @@ i18nStringsFiles.prototype.compile = (data) ->
     msgstr = msgstr.replace(/"/g, "\\\"")
     # escape new lines in msgid, msgstr
     msgid = msgid.replace(/\n/g, "\\n")
-    msgstr = msgstr.replace(/\n/g, "\\n")
+    msgstr = msgstr.replace(/\r?\n/g, "\\n")
     # add line to output
     output = output + "\"" + msgid + "\" = \"" + msgstr + "\";\n"
   # return output string
