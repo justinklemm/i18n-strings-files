@@ -111,7 +111,7 @@
       msgid = msgid.replace(/"/g, "\\\"");
       msgstr = msgstr.replace(/"/g, "\\\"");
       msgid = msgid.replace(/\n/g, "\\n");
-      msgstr = msgstr.replace(/\n/g, "\\n");
+      msgstr = msgstr.replace(/\r?\n/g, "\\n");
       output = output + "\"" + msgid + "\" = \"" + msgstr + "\";\n";
     }
     return output;

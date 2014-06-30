@@ -69,3 +69,17 @@ describe 'Async: Read, write, read (no encoding param)', ->
           checkValues(data)
           fs.unlinkSync(fileTemp)
           done()
+
+describe 'Compilation', ->
+  it 'shall replace windows-style CRLF newlines with LF(mac/unix) newlines', (done) ->
+    # Given: a dictionary containing a value string with CRLF newlines
+    crlfDict = { aKey: 'Test\r\nNew\r\nLines' };
+
+    # When: the dictionary is compiled to strings file format
+    stringsFileContent = i18nStringsFiles.compile(crlfDict);
+
+    # Then: the resulting content shall match the content crated for LF-only source
+    lfDict = { aKey: 'Test\nNew\nLines' };
+    stringsFileContent.should.equal(i18nStringsFiles.compile(lfDict));
+
+    done()

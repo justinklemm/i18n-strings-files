@@ -93,4 +93,19 @@
     });
   });
 
+  describe('Compilation', function() {
+    return it('shall replace windows-style CRLF newlines with LF(mac/unix) newlines', function(done) {
+      var crlfDict, lfDict, stringsFileContent;
+      crlfDict = {
+        aKey: 'Test\r\nNew\r\nLines'
+      };
+      stringsFileContent = i18nStringsFiles.compile(crlfDict);
+      lfDict = {
+        aKey: 'Test\nNew\nLines'
+      };
+      stringsFileContent.should.equal(i18nStringsFiles.compile(lfDict));
+      return done();
+    });
+  });
+
 }).call(this);
