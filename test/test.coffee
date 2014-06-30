@@ -13,6 +13,7 @@ checkValues = (data) ->
   data['test-chars'].should.equal("Olvidé mi contraseña")
   data['test-new-lines'].should.equal("Test\nNew\nLines")
   data['test-quotes'].should.equal("\"Test quote\"")
+  data['test-semicolon'].should.equal("Test \"; semicolon")
   data['test-spacing'].should.equal("Test spacing")
   data['test \n edge" = '].should.equal("Test edge")
 
