@@ -5,37 +5,59 @@ Iconv  = require('iconv').Iconv
 i18nStringsFiles = ->
 
 
-i18nStringsFiles.prototype.readFile = (file, encoding, callback) ->
+i18nStringsFiles.prototype.readFile = (file, options, callback) ->
+  encoding = null
+  wantsComments = false
   # check if encoding was excluded and callback specified as 2nd param
-  if typeof callback == "undefined" and typeof encoding == "function"
-    callback = encoding
+  if typeof callback == "undefined" and typeof options == "function"
+    callback = options
     encoding = null
+  else if typeof options == "string" # for backward compatibility
+    encoding = options
+  else if typeof options == "object"
+    encoding = options['encoding']
+    wantsComments = options['wantsComments']
+
   # read passed in file
   fs.readFile file, (err, buffer) =>
     # if there's an error, callback with it and return
     if err then return callback?(err, null)
     # convert buffer from file into utf-8 string, then parse
     str = @convertBufferToString(buffer, encoding)
-    data = @parse(str)
+    data = @parse(str, wantsComments)
     # callback with parsed object
     callback?(null, data)
 
+i18nStringsFiles.prototype.readFileSync = (file, options) ->
+  encoding = null
+  wantsComments = false
+  if typeof options == 'string' 
+    encoding = options
+  else if typeof options == 'object'
+    encoding = options['encoding']
+    wantsComments = options['wantsComments']
 
-i18nStringsFiles.prototype.readFileSync = (file, encoding) ->
   # read the passed in file and convert to utf-8 string
   buffer = fs.readFileSync(file)
   str = @convertBufferToString(buffer, encoding)
   # pass file contents string to parse() and return
-  return @parse(str)
+  return @parse(str, wantsComments)
 
 
-i18nStringsFiles.prototype.writeFile = (file, data, encoding, callback) ->
-  # check if encoding was excluded and callback specified as 3rd param
-  if typeof callback == "undefined" and typeof encoding == "function"
-    callback = encoding
+i18nStringsFiles.prototype.writeFile = (file, data, options, callback) ->
+  encoding = null
+  wantsComments = false
+  # check if encoding was excluded and callback specified as 2nd param
+  if typeof callback == "undefined" and typeof options == "function"
+    callback = options
     encoding = null
+  else if typeof options == "string" # for backward compatibility
+    encoding = options
+  else if typeof options == "object"
+    encoding = options['encoding']
+    wantsComments = options['wantsComments']
   # build string and convert from utf-8 to output buffer
-  str = @compile(data)
+  str = @compile(data, options)
   buffer = @convertStringToBuffer(str, encoding)
   # write buffer to file
   fs.writeFile file, buffer, (err) =>
@@ -43,9 +65,17 @@ i18nStringsFiles.prototype.writeFile = (file, data, encoding, callback) ->
     callback?(err)
 
 
-i18nStringsFiles.prototype.writeFileSync = (file, data, encoding) ->
+i18nStringsFiles.prototype.writeFileSync = (file, data, options) ->
+  encoding = null
+  wantsComments = false
+  if typeof options == 'string' 
+    encoding = options
+  else if typeof options == 'object'
+    encoding = options['encoding']
+    wantsComments = options['wantsComments']
+
   # build string and convert from utf-8 to output buffer
-  str = @compile(data)
+  str = @compile(data, options)
   buffer = @convertStringToBuffer(str, encoding)
   # write buffer to file
   return fs.writeFileSync(file, buffer)
@@ -67,14 +97,20 @@ i18nStringsFiles.prototype.convertStringToBuffer = (str, encoding) ->
   return iconv.convert(str)
 
 
-i18nStringsFiles.prototype.parse = (input) ->
+i18nStringsFiles.prototype.parse = (input, wantsComments) ->
+  # if wantsComments is not specified, default to false
+  if !wantsComments then wantsComments = false
   # patterns used for parsing
   reAssign = /[^\\]" = "/
   reLineEnd = /";$/
+  reCommentEnd = /\*\/$/
   # holds resulting hash
   result = {}
   # splt into lines
   lines = input.split("\n")
+  # previous comment
+  currentComment = ''
+  nextLineIsComment = false
   # process line by line
   lines.forEach (line) ->
     # strip extra whitespace
@@ -83,6 +119,22 @@ i18nStringsFiles.prototype.parse = (input) ->
     line = line.replace(/([^\\])("\s*=\s*")/g, "$1\" = \"")
     # remove any space between final quote and semi-colon
     line = line.replace(/"\s+;/g, '";')
+
+    # check if starts with '/*', store it in previousComment var
+    if nextLineIsComment
+      if line.search(reCommentEnd) == -1
+        currentComment += '\n' + line.trim()
+      else
+        nextLineIsComment = false
+        currentComment += '\n' + line.substr(0, line.search(reCommentEnd)).trim()
+    else if line.substr(0, 2) == '/*'
+      if line.search(reCommentEnd) == -1
+        nextLineIsComment = true
+        currentComment = line.substr(2).trim()
+      else 
+        nextLineIsComment = false
+        currentComment = line.substr(2, line.search(reCommentEnd)-2).trim()
+
     # check for first quote, assignment operator, and final semi-colon
     if line.substr(0, 1) != '"' or line.search(reAssign) == -1 or line.search(reLineEnd) == -1 then return
     # get msgid
@@ -100,24 +152,42 @@ i18nStringsFiles.prototype.parse = (input) ->
     msgid = msgid.replace(/\\n/g, "\n")
     msgstr = msgstr.replace(/\\n/g, "\n")
     # store values in object
-    result[msgid] = msgstr
+    if !wantsComments then result[msgid] = msgstr 
+    else 
+      val = { 'text': msgstr }
+      if currentComment 
+        val['comment'] = currentComment
+        currentComment = ''
+      result[msgid] = val
+
   # return resulting object
   return result
 
 
-i18nStringsFiles.prototype.compile = (data) ->
+i18nStringsFiles.prototype.compile = (data, wantsComments) ->
+  # if wantsComments is not specified, default to false
+  if !wantsComments then wantsComments = false
   # make sure data is an object
   if typeof data != "object" then return ""
   # output string
   output = ""
   # loop through hash
-  for msgid, msgstr of data
+  for msgid, val of data
+    msgstr = ''
+    comment = null
+    if typeof val == 'string' then msgstr = val
+    else
+      if val.hasOwnProperty('text') then msgstr = val['text']
+      if wantsComments and val.hasOwnProperty('comment') then comment = val['comment']
+
     # escape quotes in msgid, msgstr
     msgid = msgid.replace(/"/g, "\\\"")
     msgstr = msgstr.replace(/"/g, "\\\"")
     # escape new lines in msgid, msgstr
     msgid = msgid.replace(/\n/g, "\\n")
     msgstr = msgstr.replace(/\r?\n/g, "\\n")
+    # add comment if available
+    if comment then output = output + "/* " + comment + " */\n"
     # add line to output
     output = output + "\"" + msgid + "\" = \"" + msgstr + "\";\n"
   # return output string
