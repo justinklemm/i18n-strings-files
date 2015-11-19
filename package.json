@@ -13,11 +13,11 @@
     "url": "git://github.com/justinklemm/i18n-strings-files.git"
   },
   "dependencies": {
-    "iconv": "~2.1.5"
+    "iconv": "~2.1.11"
   },
   "devDependencies": {
-    "mocha": "~2.1.0",
-    "should": "~5.0.0"
+    "mocha": "~2.3.4",
+    "should": "~7.1.1"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha"
