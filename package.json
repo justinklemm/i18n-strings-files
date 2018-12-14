@@ -1,12 +1,12 @@
 {
   "name": "i18n-strings-files",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "./index.js",
   "description": "Process .strings files used for localization in iOS/OSX development",
   "homepage": "https://github.com/justinklemm/i18n-strings-files",
   "author": {
     "name": "Justin Klemm",
-    "url": "http://justinklemm.com"
+    "url": "https://justinklemm.com"
   },
   "repository": {
     "type": "git",
@@ -16,8 +16,8 @@
     "iconv": "^2.3.0"
   },
   "devDependencies": {
-    "mocha": "2.4.5",
-    "should": "8.2.2"
+    "mocha": "^5.2.0",
+    "should": "^13.2.0"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha"
@@ -32,6 +32,5 @@
     "osx"
   ],
   "license": "MIT",
-  "readme": "i18n-strings-files\n==================\n\n[![Build Status](https://travis-ci.org/justinklemm/i18n-strings-files.png)](https://travis-ci.org/justinklemm/i18n-strings-files)\n\nNode.js module for processing .strings files used for localization in iOS/OSX development\n\n## Installing with [npm](http://npmjs.org/)\n\n    $ npm install i18n-strings-files\n\n## Usage\n\ni18n-strings-files can be used to read a .strings file and parse it into an object, or to compile an object into .strings format and write it to a file. The intermediate functions for parsing and compiling can also be used directly.\n\nNote that specifying an encoding is optional. If an encoding is not specified, UTF-16 will be used [as recommended by Apple](https://developer.apple.com/library/mac/documentation/macosx/conceptual/bpinternational/Articles/StringsFiles.html). It's important to understand the encoding of the file being read/written and make sure it's specified properly (if it's something other than UTF-16).\n\n### readFile(filename, [encoding], callback)\n    // Include i18n-strings-files\n    var i18nStringsFiles = require('i18n-strings-files');\n    \n    // Read 'Localizable.strings' and pass an object containing the key/value pairs to a callback\n    i18nStringsFiles.readFile('Localizable.strings', 'UTF-16', function(err, data){\n        console.log(data);\n    });\n\n### readFileSync(filename, [encoding])\n    // Include i18n-strings-files\n    var i18nStringsFiles = require('i18n-strings-files');\n\n    // Read 'Localizable.strings' and return it as an object containing the key/value pairs\n    var data = i18nStringsFiles.readFileSync('Localizable.strings', 'UTF-16');\n    console.log(data);\n\n### writeFile(filename, data, [encoding], callback)\n    // Include i18n-strings-files\n    var i18nStringsFiles = require('i18n-strings-files');\n\n    // An object containing some properties\n    var data = {\n        'key1': 'value1',\n        'key2': 'value2'\n    };\n    \n    // Write an object containing key/value pairs to file 'Localizable.strings', execute callback when done\n    i18nStringsFiles.writeFile('Localizable.strings', data, 'UTF-16', function(err){\n        if(err) return console.log(err);\n        console.log('File written');\n    });\n\n### writeFileSync(filename, data, [encoding])\n    // Include i18n-strings-files\n    var i18nStringsFiles = require('i18n-strings-files');\n\n    // Write an object containing key/value pairs to file 'Localizable.strings'\n    i18nStringsFiles.writeFileSync('Localizable.strings', data, 'UTF-16');\n    console.log('File written');\n\n### parse(input)\n    // Include i18n-strings-files\n    var i18nStringsFiles = require('i18n-strings-files');\n\n    // A string in the .strings file format\n    var input = '\"key1\" = \"value1\";'\n    \n    // Parse .strings format string into object containing the key/value pairs\n    var data = i18nStringsFiles.parse(input);\n\n### compile(data)\n    // Include i18n-strings-files\n    var i18nStringsFiles = require('i18n-strings-files');\n\n    // An object containing some properties\n    var data = {\n        'key1': 'value1',\n        'key2': 'value2'\n    };\n    \n    // Compile an object containing key/value pairs into a string in .strings file format\n    var str = i18nStringsFiles.compile(data);",
   "readmeFilename": "README.md"
 }
