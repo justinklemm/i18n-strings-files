@@ -2,6 +2,9 @@ CHANGELOG for i18n-strings-files
 ==================
 This changelog references changes made to the i18n-strings-files package beginning after v0.0.4.
 
+* v1.0.6 (2020-07-28)
+ * Bump dependency versions
+
 * v1.0.5 (2020-03-24)
  * Bump dependency versions
 
