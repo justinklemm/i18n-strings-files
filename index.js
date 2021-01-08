@@ -164,7 +164,7 @@
       }
       msgid = '';
       msgstr = '';
-      if (line === '') {
+      if (line === '' && !nextLineIsValue) {
         return;
       }
       // check if starts with '/*', store it in currentComment var

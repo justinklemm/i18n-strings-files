@@ -96,7 +96,7 @@ i18nStringsFiles.prototype.convertStringToBuffer = (str, encoding) ->
   # convert string from utf-8 to buffer in output encoding
   iconv = new Iconv('UTF-8', encoding)
   return iconv.convert(str)
-  
+
 
 i18nStringsFiles.prototype.parse = (input, wantsComments) ->
   # if wantsComments is not specified, default to false
@@ -148,7 +148,7 @@ i18nStringsFiles.prototype.parse = (input, wantsComments) ->
     msgid = ''
     msgstr = ''
 
-    if line == ''
+    if line == '' && !nextLineIsValue
       return
 
     # check if starts with '/*', store it in currentComment var
