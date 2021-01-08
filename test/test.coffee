@@ -19,6 +19,7 @@ checkValues = (data) ->
   data['test-multiline-comment'].should.equal("Test multiline comment")
   data['test-multiline-value'].should.equal("Test\nmultiline\nvalue")
   data['test-multiline-value-with-space'].should.equal("Test\nmultiline\n\nwith\n\nempty space\nvalue")
+  data['test-multiline-value-with-comment'].should.equal("Test\nmultiline\nvalue\nwith comment\n/* comment */\n")
 
 
 
@@ -43,7 +44,8 @@ checkValuesWithComments = (data) ->
   data['test-multiline-value']['comment'].should.equal("Multiline Value")
   data['test-multiline-value-with-space']['text'].should.equal("Test\nmultiline\n\nwith\n\nempty space\nvalue")
   data['test-multiline-value-with-space']['comment'].should.equal("Multiline Value with space")
-
+  data['test-multiline-value-with-comment']['text'].should.equal("Test\nmultiline\nvalue\nwith comment\n/* comment */\n")
+  data['test-multiline-value-with-comment']['comment'].should.equal("Multiline Value with comment")
 
 
 

@@ -135,7 +135,7 @@ i18nStringsFiles.prototype.parse = (input, wantsComments) ->
         nextLineIsComment = false
         currentComment += '\n' + line.substr(0, line.search(reCommentEnd)).trim()
         return
-    else if line.substr(0, 2) == '/*'
+    else if line.substr(0, 2) == '/*' && !nextLineIsValue
       if line.search(reCommentEnd) == -1
         nextLineIsComment = true
         currentComment = line.substr(2).trim()
