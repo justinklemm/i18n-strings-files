@@ -17,6 +17,11 @@ checkValues = (data) ->
   data['test-spacing'].should.equal("Test spacing")
   data['test \n edge" = '].should.equal("Test edge")
   data['test-multiline-comment'].should.equal("Test multiline comment")
+  data['test-multiline-value'].should.equal("Test\nmultiline\nvalue")
+  data['test-multiline-value-with-space'].should.equal("Test\nmultiline\n\nwith\n\nempty space\nvalue")
+  data['test-multiline-value-with-comment'].should.equal("Test\nmultiline\nvalue\nwith comment\n/* comment */\n")
+
+
 
 checkValuesWithComments = (data) ->
   data['test-normal']['text'].should.equal("Test normal")
@@ -35,6 +40,14 @@ checkValuesWithComments = (data) ->
   data['test \n edge" = ']['comment'].should.equal("Edge case")
   data['test-multiline-comment']['text'].should.equal("Test multiline comment")
   data['test-multiline-comment']['comment'].should.equal("Multiline\nComment")
+  data['test-multiline-value']['text'].should.equal("Test\nmultiline\nvalue")
+  data['test-multiline-value']['comment'].should.equal("Multiline Value")
+  data['test-multiline-value-with-space']['text'].should.equal("Test\nmultiline\n\nwith\n\nempty space\nvalue")
+  data['test-multiline-value-with-space']['comment'].should.equal("Multiline Value with space")
+  data['test-multiline-value-with-comment']['text'].should.equal("Test\nmultiline\nvalue\nwith comment\n/* comment */\n")
+  data['test-multiline-value-with-comment']['comment'].should.equal("Multiline Value with comment")
+
+
 
 describe 'Sync: Reading file into object', ->
   it 'should populate object properties with values', ->

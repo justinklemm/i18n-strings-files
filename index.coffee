@@ -31,7 +31,7 @@ i18nStringsFiles.prototype.readFile = (file, options, callback) ->
 i18nStringsFiles.prototype.readFileSync = (file, options) ->
   encoding = null
   wantsComments = false
-  if typeof options == 'string' 
+  if typeof options == 'string'
     encoding = options
   else if typeof options == 'object'
     encoding = options['encoding']
@@ -40,6 +40,7 @@ i18nStringsFiles.prototype.readFileSync = (file, options) ->
   # read the passed in file and convert to utf-8 string
   buffer = fs.readFileSync(file)
   str = @convertBufferToString(buffer, encoding)
+
   # pass file contents string to parse() and return
   return @parse(str, wantsComments)
 
@@ -68,7 +69,7 @@ i18nStringsFiles.prototype.writeFile = (file, data, options, callback) ->
 i18nStringsFiles.prototype.writeFileSync = (file, data, options) ->
   encoding = null
   wantsComments = false
-  if typeof options == 'string' 
+  if typeof options == 'string'
     encoding = options
   else if typeof options == 'object'
     encoding = options['encoding']
@@ -108,9 +109,14 @@ i18nStringsFiles.prototype.parse = (input, wantsComments) ->
   result = {}
   # splt into lines
   lines = input.split("\n")
+
   # previous comment
   currentComment = ''
+  currentValue = ''
+  currentId = ''
   nextLineIsComment = false
+  nextLineIsValue = false
+
   # process line by line
   lines.forEach (line) ->
     # strip extra whitespace
@@ -120,49 +126,80 @@ i18nStringsFiles.prototype.parse = (input, wantsComments) ->
     # remove any space between final quote and semi-colon
     line = line.replace(/"\s+;/g, '";')
 
-    # check if starts with '/*', store it in previousComment var
+    # check if starts with '/*', store it in currentComment var
     if nextLineIsComment
       if line.search(reCommentEnd) == -1
         currentComment += '\n' + line.trim()
+        return
       else
         nextLineIsComment = false
         currentComment += '\n' + line.substr(0, line.search(reCommentEnd)).trim()
-    else if line.substr(0, 2) == '/*'
+        return
+    else if line.substr(0, 2) == '/*' && !nextLineIsValue
       if line.search(reCommentEnd) == -1
         nextLineIsComment = true
         currentComment = line.substr(2).trim()
-      else 
+        return
+      else
         nextLineIsComment = false
         currentComment = line.substr(2, line.search(reCommentEnd)-2).trim()
+        return
 
-    # check for first quote, assignment operator, and final semi-colon
-    if line.substr(0, 1) != '"' or line.search(reAssign) == -1 or line.search(reLineEnd) == -1 then return
-    # get msgid
-    msgid = line
-    msgid = msgid.substr(1)
-    msgid = msgid.substr(0, msgid.search(reAssign) + 1)
-    # get msg str
-    msgstr = line
-    msgstr = msgstr.substr(msgstr.search(reAssign) + 6)
-    msgstr = msgstr.substr(0, msgstr.search(reLineEnd))
-    # convert escaped quotes
-    msgid = msgid.replace(/\\"/g, "\"")
+    msgid = ''
+    msgstr = ''
+
+    if line == '' && !nextLineIsValue
+      return
+
+    # check if starts with '/*', store it in currentComment var
+    if nextLineIsValue
+      if line.search(reLineEnd) == -1
+        currentValue += '\n' + line.trim()
+        return
+      else
+        nextLineIsValue = false
+        currentValue += '\n' + line.substr(0, line.search(reLineEnd)).trim()
+        msgid = currentId
+        msgstr = currentValue
+        currentId = ''
+        currentValue = ''
+    else if line.search(reLineEnd) == -1 && !nextLineIsComment
+      nextLineIsValue = true
+      currentId = line
+      currentId = currentId.substr(1)
+      currentId = currentId.substr(0, currentId.search(reAssign) + 1)
+      currentId = currentId.replace(/\\"/g, "\"")
+      currentValue = line
+      currentValue = currentValue.substr(currentValue.search(reAssign) + 6)
+      return
+    else
+      # get msgid
+      msgid = line
+      msgid = msgid.substr(1)
+      msgid = msgid.substr(0, msgid.search(reAssign) + 1)
+      # get msg str
+      msgstr = line
+      msgstr = msgstr.substr(msgstr.search(reAssign) + 6)
+      msgstr = msgstr.substr(0, msgstr.search(reLineEnd))
+      # convert escaped quotes
+      msgid = msgid.replace(/\\"/g, "\"")
+
     msgstr = msgstr.replace(/\\"/g, "\"")
     # convert escaped new lines
     msgid = msgid.replace(/\\n/g, "\n")
     msgstr = msgstr.replace(/\\n/g, "\n")
+
     # store values in object
-    if !wantsComments then result[msgid] = msgstr 
-    else 
+    if !wantsComments then result[msgid] = msgstr
+    else
       val = { 'text': msgstr }
-      if currentComment 
+      if currentComment
         val['comment'] = currentComment
         currentComment = ''
       result[msgid] = val
 
   # return resulting object
   return result
-
 
 i18nStringsFiles.prototype.compile = (data, wantsComments) ->
   # if wantsComments is not specified, default to false
