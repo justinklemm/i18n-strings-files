@@ -2,6 +2,9 @@ CHANGELOG for i18n-strings-files
 ==================
 This changelog references changes made to the i18n-strings-files package beginning after v0.0.4.
 
+* v1.0.7 (2021-01-12)
+ * Added support for multiline values
+
 * v1.0.6 (2020-07-28)
  * Bump dependency versions
 
