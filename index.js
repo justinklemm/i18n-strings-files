@@ -259,7 +259,7 @@
       msgstr = msgstr.replace(/\r?\n/g, "\\n");
       // add comment if available
       if (comment) {
-        if (/^(MARK|TODO|FIXME)/.test(comment)) {
+        if (/^(MARK|TODO|FIXME)/.test(comment) && comment.indexOf('\n') === -1) {
           output = output + "// " + comment + " \n";
         } else {
           output = output + "/* " + comment + " */\n";
