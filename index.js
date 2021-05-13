@@ -151,6 +151,9 @@
           currentComment += '\n' + line.substr(0, line.search(reCommentEnd)).trim();
           return;
         }
+      } else if (line.substr(0, 2) === '//') {
+        currentComment = line.substr(2).trim();
+        return;
       } else if (line.substr(0, 2) === '/*' && !nextLineIsValue) {
         if (line.search(reCommentEnd) === -1) {
           nextLineIsComment = true;
@@ -256,7 +259,11 @@
       msgstr = msgstr.replace(/\r?\n/g, "\\n");
       // add comment if available
       if (comment) {
-        output = output + "/* " + comment + " */\n";
+        if (/^(MARK|TODO|FIXME)/.test(comment) && comment.indexOf('\n') === -1) {
+          output = output + "// " + comment + " \n";
+        } else {
+          output = output + "/* " + comment + " */\n";
+        }
       }
       // add line to output
       output = output + "\"" + msgid + "\" = \"" + msgstr + "\";\n";
