@@ -114,7 +114,7 @@
   };
 
   i18nStringsFiles.prototype.parse = function(input, wantsComments) {
-    var currentComment, currentId, currentValue, lines, nextLineIsComment, nextLineIsValue, reAssign, reCommentEnd, reLineEnd, result;
+    var currentComment, currentComments, currentId, currentValue, lines, nextLineIsComment, nextLineIsId, nextLineIsValue, reAssign, reCommentEnd, reLineEnd, result;
     if (!wantsComments) {
       wantsComments = false;
     }
@@ -123,20 +123,21 @@
     reLineEnd = /";$/;
     reCommentEnd = /\*\/$/;
     // holds resulting hash
-    result = {};
+    result = new Map();
     // splt into lines
     lines = input.split("\n");
     // previous comment
     currentComment = '';
+    currentComments = new Set();
     currentValue = '';
     currentId = '';
     nextLineIsComment = false;
+    nextLineIsId = false;
     nextLineIsValue = false;
     // process line by line
     lines.forEach(function(line) {
       var msgid, msgstr, val;
       // strip extra whitespace
-      line = line.trim();
       // normalize spacing around assignment operator
       line = line.replace(/([^\\])("\s*=\s*")/g, "$1\" = \"");
       // remove any space between final quote and semi-colon
@@ -149,6 +150,7 @@
         } else {
           nextLineIsComment = false;
           currentComment += '\n' + line.substr(0, line.search(reCommentEnd)).trim();
+          currentComments.add(currentComment);
           return;
         }
       } else if (line.substr(0, 2) === '//') {
@@ -162,36 +164,67 @@
         } else {
           nextLineIsComment = false;
           currentComment = line.substr(2, line.search(reCommentEnd) - 2).trim();
+          currentComments.add(currentComment);
           return;
         }
       }
       msgid = '';
       msgstr = '';
-      if (line === '' && !nextLineIsValue) {
+      if (line === '' && !(nextLineIsValue || nextLineIsId)) {
         return;
       }
       // check if starts with '/*', store it in currentComment var
       if (nextLineIsValue) {
         if (line.search(reLineEnd) === -1) {
-          currentValue += '\n' + line.trim();
+          currentValue += '\n' + line;
           return;
         } else {
           nextLineIsValue = false;
-          currentValue += '\n' + line.substr(0, line.search(reLineEnd)).trim();
+          currentValue += '\n' + line.substr(0, line.search(reLineEnd));
           msgid = currentId;
           msgstr = currentValue;
           currentId = '';
           currentValue = '';
         }
+      } else if (nextLineIsId) {
+        if (line.search(reAssign) === -1 && !line.startsWith('" = "')) {
+          currentId += '\n' + line;
+          return;
+        } else {
+          nextLineIsId = false;
+          currentId += '\n' + line.substr(0, line.search(reAssign) + 1);
+
+          if (line.search(reLineEnd) === -1) {
+            nextLineIsValue = true;
+            currentValue = line;
+            currentValue = currentValue.substr(currentValue.search(reAssign) + 6);
+            return;
+          } else {
+            msgid = currentId;
+            msgstr = line;
+            msgstr = msgstr.substr(msgstr.search(reAssign) + 6);
+            msgstr = msgstr.substr(0, msgstr.search(reLineEnd));
+            currentId = '';
+            currentValue = '';
+          }
+        }
       } else if (line.search(reLineEnd) === -1 && !nextLineIsComment) {
-        nextLineIsValue = true;
-        currentId = line;
-        currentId = currentId.substr(1);
-        currentId = currentId.substr(0, currentId.search(reAssign) + 1);
-        currentId = currentId.replace(/\\"/g, "\"");
-        currentValue = line;
-        currentValue = currentValue.substr(currentValue.search(reAssign) + 6);
-        return;
+        if (line.search(reAssign) === -1) {
+          nextLineIsId = true;
+          currentId = line;
+          currentId = currentId.substr(1);
+          currentValue = '';
+          return;
+        } else {
+          nextLineIsValue = true;
+          currentId = line;
+          currentId = currentId.substr(1);
+          currentId = currentId.substr(0, currentId.search(reAssign) + 1);
+          //currentId = currentId.replace(/\\"/g, "\"");
+          currentValue = line;
+          currentValue = currentValue.substr(currentValue.search(reAssign) + 6);
+          return;
+        }
       } else {
         // get msgid
         msgid = line;
@@ -202,23 +235,31 @@
         msgstr = msgstr.substr(msgstr.search(reAssign) + 6);
         msgstr = msgstr.substr(0, msgstr.search(reLineEnd));
         // convert escaped quotes
-        msgid = msgid.replace(/\\"/g, "\"");
       }
-      msgstr = msgstr.replace(/\\"/g, "\"");
       // convert escaped new lines
-      msgid = msgid.replace(/\\n/g, "\n");
-      msgstr = msgstr.replace(/\\n/g, "\n");
+      msgid = msgid.replace(/\\n/g, "\nNEWLINE");
+      msgstr = msgstr.replace(/\\n/g, "\nNEWLINE");
       if (!wantsComments) {
-        return result[msgid] = msgstr;
+        result.set(msgid, msgstr);
+        return;
       } else {
         val = {
           'text': msgstr
         };
-        if (currentComment) {
-          val['comment'] = currentComment;
+        if (currentComments) {
+          val['comments'] = currentComments;
           currentComment = '';
+          currentComments = new Set();
         }
-        return result[msgid] = val;
+
+        if (result.has(msgid)) {
+          var previousComments = result.get(msgid)['comments'];
+          val['comments'] = new Set([...previousComments, ...val['comments']]);
+        }
+
+        result.set(msgid, val);
+
+        return;
       }
     });
     // return resulting object
@@ -226,7 +267,7 @@
   };
 
   i18nStringsFiles.prototype.compile = function(data, wantsComments) {
-    var comment, msgid, msgstr, output, val;
+    var comments, msgid, msgstr, output, val;
     if (!wantsComments) {
       wantsComments = false;
     }
@@ -236,37 +277,35 @@
     }
     // output string
     output = "";
-// loop through hash
-    for (msgid in data) {
-      val = data[msgid];
+    //for (msgid in data) {
+    for ([msgid, val] of data) {
       msgstr = '';
-      comment = null;
+      comments = null;
       if (typeof val === 'string') {
         msgstr = val;
       } else {
         if (val.hasOwnProperty('text')) {
           msgstr = val['text'];
         }
-        if (wantsComments && val.hasOwnProperty('comment')) {
-          comment = val['comment'];
+        if (wantsComments && val.hasOwnProperty('comments')) {
+          comments = val['comments'];
         }
       }
-      // escape quotes in msgid, msgstr
-      msgid = msgid.replace(/"/g, "\\\"");
-      msgstr = msgstr.replace(/"/g, "\\\"");
       // escape new lines in msgid, msgstr
-      msgid = msgid.replace(/\n/g, "\\n");
-      msgstr = msgstr.replace(/\r?\n/g, "\\n");
+      msgid = msgid.replace(/\nNEWLINE/g, "\\n");
+      msgstr = msgstr.replace(/\nNEWLINE/g, "\\n");
       // add comment if available
-      if (comment) {
-        if (/^(MARK|TODO|FIXME)/.test(comment) && comment.indexOf('\n') === -1) {
-          output = output + "// " + comment + " \n";
-        } else {
-          output = output + "/* " + comment + " */\n";
-        }
+      if (comments) {
+        comments.forEach(comment => {
+          if (/^(MARK|TODO|FIXME)/.test(comment) && comment.indexOf('\n') === -1) {
+            output = output + "// " + comment + " \n";
+          } else {
+            output = output + "/* " + comment + " */\n";
+          }
+        })
       }
       // add line to output
-      output = output + "\"" + msgid + "\" = \"" + msgstr + "\";\n";
+      output = output + "\"" + msgid + "\" = \"" + msgstr + "\";\n\n";
     }
     // return output string
     return output;
