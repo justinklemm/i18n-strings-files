@@ -2,6 +2,13 @@ CHANGELOG for i18n-strings-files
 ==================
 This changelog references changes made to the i18n-strings-files package beginning after v0.0.4.
 
+* v2.0.0 (2022-06-07)
+ * Bump dependencies + iconv version
+ * Require Node v14+
+
+* v1.0.10 (2022-06-07)
+ * Bump dependency versions
+
 * v1.0.9 (2021-05-13)
  * Added support for double backslash comments
  * Bump dependency versions
