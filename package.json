@@ -1,7 +1,9 @@
 {
   "name": "apple-strings",
   "version": "0.0.1",
-  "main": "./src/index.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": ["/lib"],
   "description": "Process .strings files used for localization in iOS/OSX development. Forked from <https://www.npmjs.com/package/i18n-strings-files>, rewritten in TypeScript.",
   "homepage": "https://github.com/imWildCat/i18n-strings-files",
   "author": {
@@ -27,7 +29,9 @@
     "typescript": "^4.7.4"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha"
+    "test": "jest",
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "i18n",
