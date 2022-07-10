@@ -1,4 +1,4 @@
-type I18nStringsFilesNoComment = Record<string, string>;
+export type I18nStringsFilesNoComment = Record<string, string>;
 export interface I18nStringsWithCommentEntry {
   text: string;
   comment?: string;
