@@ -132,15 +132,14 @@
 
 import fs from 'fs';
 import path from 'path';
-import { readFileSync } from '../index';
+import { compile, parse, readFileSync } from '../index';
 import { I18nStringFileWithComment, I18nStringsFiles } from '../types';
 
 const fileTemp = path.resolve(__dirname, './temp.strings');
 const fileTest = path.resolve(__dirname, './test.strings');
 const fileEncoding = 'UTF-16';
 
-test('checkValues', () => {
-  const data = readFileSync(fileTest, fileEncoding);
+const checkValues = (data: I18nStringsFiles) => {
   expect(data['test-normal']).toEqual('Test normal');
   expect(data['test-chars']).toEqual('Olvidé mi contraseña');
   expect(data['test-new-lines']).toEqual('Test\nNew\nLines');
@@ -152,11 +151,11 @@ test('checkValues', () => {
   expect(data['test-multiline-value']).toEqual('Test\nmultiline\nvalue');
   expect(data['test-multiline-value-with-space']).toEqual('Test\nmultiline\n\nwith\n\nempty space\nvalue');
   expect(data['test-multiline-value-with-comment']).toEqual('Test\nmultiline\nvalue\nwith comment\n/* comment */\n');
-});
+};
 
 
-test('checkValuesWithComments', () => {
-  const data = readFileSync(fileTest, { encoding: fileEncoding, wantsComments: true }) as I18nStringFileWithComment;
+const checkValuesWithComments = (inputData: I18nStringsFiles) => {
+  const data = inputData as I18nStringFileWithComment;
 
   expect(data['test-normal']['text']).toEqual('Test normal');
   expect(data['test-normal']['comment']).toEqual('Normal');
@@ -180,4 +179,34 @@ test('checkValuesWithComments', () => {
   expect(data['test-multiline-value-with-space']['comment']).toEqual('Multiline Value with space');
   expect(data['test-multiline-value-with-comment']['text']).toEqual('Test\nmultiline\nvalue\nwith comment\n/* comment */\n');
   expect(data['test-multiline-value-with-comment']['comment']).toEqual('Multiline Value with comment');
+};
+
+
+describe('Sync: Read, compile, parse', () => {
+  it('should populate object properties with values before and after', () => {
+    const data = readFileSync(fileTest, fileEncoding);
+    const str = compile(data);
+    const data2 = parse(str);
+    checkValues(data2);
+  });
+  it('should populate object properties with values before and after (wantsComments = true)', () => {
+    const data = readFileSync(fileTest, { encoding: fileEncoding, wantsComments: true });
+    const str = compile(data, true);
+    const data2 = parse(str, true);
+    checkValuesWithComments(data2);
+  }
+  );
+});
+
+
+
+describe('Sync: Reading file into object', () => {
+  it('should populate object properties with values', () => {
+    const data = readFileSync(fileTest, fileEncoding);
+    checkValues(data);
+  });
+  it('should populate object properties with values (wantsComments = true)', () => {
+    const data = readFileSync(fileTest, { encoding: fileEncoding, wantsComments: true });
+    checkValuesWithComments(data);
+  });
 });
