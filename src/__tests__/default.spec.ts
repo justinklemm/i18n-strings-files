@@ -1,5 +1,6 @@
 import fs from 'fs';
-import { parse, convertBufferToString } from '../index';
+import { convertBufferToString } from "../convertBufferToString";
+import { parse } from "../parse";
 
 test('parse', async () => {
   const stringsFileContentBuffer = fs.readFileSync('./test/test.strings');
