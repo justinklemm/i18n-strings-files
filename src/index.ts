@@ -1,3 +1,4 @@
+import { I18nStringsWithCommentEntry } from './types';
 
 
 export {
@@ -17,6 +18,7 @@ export { writeFile, writeFileSync } from './writeFile';
 export {
   I18nStringsFilesNoComment,
   I18nStringsWithCommentEntry,
+  I18nStringFileWithComment,
   I18nStringsFiles,
 } from './types';
 

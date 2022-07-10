@@ -8,21 +8,6 @@
 // fileEncoding = 'UTF-16'
 
 
-// checkValues = (data) ->
-//   data['test-normal'].should.equal("Test normal")
-//   data['test-chars'].should.equal("Olvidé mi contraseña")
-//   data['test-new-lines'].should.equal("Test\nNew\nLines")
-//   data['test-quotes'].should.equal("\"Test quote\"")
-//   data['test-semicolon'].should.equal("Test \"; semicolon")
-//   data['test-spacing'].should.equal("Test spacing")
-//   data['test \n edge" = '].should.equal("Test edge")
-//   data['test-multiline-comment'].should.equal("Test multiline comment")
-//   data['test-multiline-value'].should.equal("Test\nmultiline\nvalue")
-//   data['test-multiline-value-with-space'].should.equal("Test\nmultiline\n\nwith\n\nempty space\nvalue")
-//   data['test-multiline-value-with-comment'].should.equal("Test\nmultiline\nvalue\nwith comment\n/* comment */\n")
-
-
-
 // checkValuesWithComments = (data) ->
 //   data['test-normal']['text'].should.equal("Test normal")
 //   data['test-normal']['comment'].should.equal("Normal")
@@ -148,25 +133,11 @@
 import fs from 'fs';
 import path from 'path';
 import { readFileSync } from '../index';
+import { I18nStringFileWithComment, I18nStringsFiles } from '../types';
 
 const fileTemp = path.resolve(__dirname, './temp.strings');
 const fileTest = path.resolve(__dirname, './test.strings');
 const fileEncoding = 'UTF-16';
-
-// checkValues = (data) ->
-//   data['test-normal'].should.equal("Test normal")
-//   data['test-chars'].should.equal("Olvidé mi contraseña")
-//   data['test-new-lines'].should.equal("Test\nNew\nLines")
-//   data['test-quotes'].should.equal("\"Test quote\"")
-//   data['test-semicolon'].should.equal("Test \"; semicolon")
-//   data['test-spacing'].should.equal("Test spacing")
-//   data['test \n edge" = '].should.equal("Test edge")
-//   data['test-multiline-comment'].should.equal("Test multiline comment")
-//   data['test-multiline-value'].should.equal("Test\nmultiline\nvalue")
-//   data['test-multiline-value-with-space'].should.equal("Test\nmultiline\n\nwith\n\nempty space\nvalue")
-//   data['test-multiline-value-with-comment'].should.equal("Test\nmultiline\nvalue\nwith comment\n/* comment */\n")
-
-
 
 test('checkValues', () => {
   const data = readFileSync(fileTest, fileEncoding);
@@ -181,4 +152,32 @@ test('checkValues', () => {
   expect(data['test-multiline-value']).toEqual('Test\nmultiline\nvalue');
   expect(data['test-multiline-value-with-space']).toEqual('Test\nmultiline\n\nwith\n\nempty space\nvalue');
   expect(data['test-multiline-value-with-comment']).toEqual('Test\nmultiline\nvalue\nwith comment\n/* comment */\n');
+});
+
+
+test('checkValuesWithComments', () => {
+  const data = readFileSync(fileTest, { encoding: fileEncoding, wantsComments: true }) as I18nStringFileWithComment;
+
+  expect(data['test-normal']['text']).toEqual('Test normal');
+  expect(data['test-normal']['comment']).toEqual('Normal');
+  expect(data['test-chars']['text']).toEqual('Olvidé mi contraseña');
+  expect(data['test-chars']['comment']).toEqual('Special characters');
+  expect(data['test-new-lines']['text']).toEqual('Test\nNew\nLines');
+  expect(data['test-new-lines']['comment']).toEqual('Escaped new lines');
+  expect(data['test-quotes']['text']).toEqual('"Test quote"');
+  expect(data['test-quotes']['comment']).toEqual('Escaped quotes');
+  expect(data['test-semicolon']['text']).toEqual('Test \"; semicolon');
+  expect(data['test-semicolon']['comment']).toEqual('Quote and semicolon case');
+  expect(data['test-spacing']['text']).toEqual('Test spacing');
+  expect(data['test-spacing']['comment']).toEqual('Messed up spacing');
+  expect(data['test \n edge" = ']['text']).toEqual('Test edge');
+  expect(data['test \n edge" = ']['comment']).toEqual('Edge case');
+  expect(data['test-multiline-comment']['text']).toEqual('Test multiline comment');
+  expect(data['test-multiline-comment']['comment']).toEqual('Multiline\nComment');
+  expect(data['test-multiline-value']['text']).toEqual('Test\nmultiline\nvalue');
+  expect(data['test-multiline-value']['comment']).toEqual('Multiline Value');
+  expect(data['test-multiline-value-with-space']['text']).toEqual('Test\nmultiline\n\nwith\n\nempty space\nvalue');
+  expect(data['test-multiline-value-with-space']['comment']).toEqual('Multiline Value with space');
+  expect(data['test-multiline-value-with-comment']['text']).toEqual('Test\nmultiline\nvalue\nwith comment\n/* comment */\n');
+  expect(data['test-multiline-value-with-comment']['comment']).toEqual('Multiline Value with comment');
 });
