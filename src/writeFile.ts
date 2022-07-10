@@ -23,8 +23,8 @@ export function writeFile(file: string, data: I18nStringsFiles, options?: WriteF
   const str = compile(data, wantsComments);
   const buffer = convertStringToBuffer(str, encoding);
   fs.writeFile(file, buffer, (err) => {
-    if (err && callback) {
-      return callback(err);
+    if (callback) {
+      callback(err);
     }
   });
 }

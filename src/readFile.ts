@@ -3,7 +3,7 @@ import { convertBufferToString } from './convertBufferToString';
 import { parse } from './parse';
 import { CallbackFunc, OptionLike } from "./Option";
 
-export function readFile(file: string, options: OptionLike, callback: CallbackFunc) {
+export function readFile(file: string, options?: OptionLike, callback?: CallbackFunc) {
   let encoding: string | undefined;
   let wantsComments: boolean | undefined;
   if (typeof callback === 'undefined' && typeof options === 'function') {
@@ -18,11 +18,11 @@ export function readFile(file: string, options: OptionLike, callback: CallbackFu
 
   fs.readFile(file, (err, buffer) => {
     if (err) {
-      return callback(err, null);
+      return callback && callback(err, null);
     }
     const str = convertBufferToString(buffer, encoding);
     const data = parse(str, wantsComments);
-    callback(null, data);
+    callback && callback(null, data);
   });
 }
 
