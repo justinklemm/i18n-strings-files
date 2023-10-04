@@ -131,7 +131,7 @@
     currentComments = new Set();
     currentValue = '';
     currentId = '';
-    nextLineIsComment = false;
+    nextLineIsComment = true;
     nextLineIsId = false;
     nextLineIsValue = false;
     // process line by line
